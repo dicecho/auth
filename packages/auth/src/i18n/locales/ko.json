@@ -1,0 +1,19 @@
+{
+  "email": {
+    "verification": {
+      "subject": "계정 활성화",
+      "welcome": "환영합니다!",
+      "body": "Dicecho에 오신 것을 환영합니다! 아래 버튼을 클릭하여 계정을 활성화하세요",
+      "button": "시작하기"
+    },
+    "resetPassword": {
+      "subject": "비밀번호 재설정",
+      "title": "비밀번호를 잊으셨나요?",
+      "body": "안녕하세요 {{nickname}}님, 15분 이내에 아래 링크를 클릭하여 비밀번호를 재설정하세요. 요청하지 않으셨다면 이 이메일을 무시해 주세요.",
+      "button": "비밀번호 재설정"
+    },
+    "common": {
+      "contactUs": "문의하기:"
+    }
+  }
+}

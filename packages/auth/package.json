@@ -11,13 +11,14 @@
   },
   "scripts": {},
   "devDependencies": {
-    "typescript": "catalog:",
-    "@dicecho-auth/config": "workspace:*"
+    "@dicecho-auth/config": "workspace:*",
+    "typescript": "catalog:"
   },
   "dependencies": {
+    "@dicecho-auth/db": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",
-    "zod": "catalog:",
-    "@dicecho-auth/db": "workspace:*"
+    "i18next": "^25.7.3",
+    "zod": "catalog:"
   }
 }

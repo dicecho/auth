@@ -1,0 +1,19 @@
+{
+  "email": {
+    "verification": {
+      "subject": "Verify your account",
+      "welcome": "Welcome!",
+      "body": "Welcome to Dicecho! Click the button below to activate your account",
+      "button": "Get Started"
+    },
+    "resetPassword": {
+      "subject": "Reset your password",
+      "title": "Forgot your password?",
+      "body": "Hi {{nickname}}, please click the link below within 15 minutes to reset your password. If you didn't request this, please ignore this email.",
+      "button": "Reset Password"
+    },
+    "common": {
+      "contactUs": "Contact us:"
+    }
+  }
+}

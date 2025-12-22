@@ -1,0 +1,19 @@
+{
+  "email": {
+    "verification": {
+      "subject": "激活账号",
+      "welcome": "欢迎！",
+      "body": "欢迎加入骰声回响！点击下方的按钮来激活您的账号",
+      "button": "开始回响"
+    },
+    "resetPassword": {
+      "subject": "重置您的密码",
+      "title": "忘记密码了？",
+      "body": "Hi, {{nickname}}，请在15分钟内点击下方的链接来重置您的密码，如果您没有做过相关的操作请忽视这封邮件",
+      "button": "重置密码"
+    },
+    "common": {
+      "contactUs": "联系我们:"
+    }
+  }
+}

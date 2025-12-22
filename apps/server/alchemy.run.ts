@@ -14,6 +14,8 @@ export const server = await Worker("server", {
     CORS_ORIGIN: alchemy.env.CORS_ORIGIN,
     BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: alchemy.env.BETTER_AUTH_URL,
+    MAILGUN_API_KEY: alchemy.secret.env.MAILGUN_API_KEY,
+    MAILGUN_DOMAIN: alchemy.env.MAILGUN_DOMAIN,
   },
   dev: {
     port: 3000,
