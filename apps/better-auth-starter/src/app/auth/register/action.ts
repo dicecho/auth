@@ -1,6 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { APIError } from "better-auth/api";
 import { ActionResult } from "@/lib/schemas";
 import { registerSchema, RegisterSchema } from "@/lib/schemas";
@@ -21,14 +21,13 @@ export async function registerUser(
   const { email, password, name } = parsed.data;
 
   try {
-    const { user } = await auth.api.signUpEmail({
-      body: {
-        email,
-        password,
-        name,
-        callbackURL: DEFAULT_LOGIN_REDIRECT,
-      },
+    const { user, error } = await authClient.signUp.email({
+      body: { email, password, name, callbackURL: DEFAULT_LOGIN_REDIRECT },
     });
+
+    if (error) {
+      throw new APIError(error.status ?? "BAD_REQUEST", error.message);
+    }
 
     return {
       success: {

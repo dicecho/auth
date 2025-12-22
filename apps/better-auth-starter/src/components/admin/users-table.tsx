@@ -33,7 +33,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserWithDetails } from "@/utils/users";
+import { UserWithDetails, getUsers, GetUsersOptions } from "@/utils/users";
 import { GithubIcon, GoogleIcon } from "../ui/icons";
 import { UserActions } from "./user-actions";
 import {
@@ -53,8 +53,15 @@ import {
 } from "@/components/ui/pagination";
 import { UserAddDialog } from "./user-add-dialog";
 
-// Fetcher function for SWR
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+// Fetcher function for SWR - directly call authClient
+const fetcher = async (options: GetUsersOptions) => {
+  const result = await getUsers(options);
+  return {
+    users: result.users,
+    total: result.total,
+    totalPages: Math.ceil(result.total / (options.limit ?? 10)),
+  };
+};
 
 // Helper function to render account icons
 const getAccountIcon = (account: string) => {
@@ -101,20 +108,26 @@ export function UsersTable() {
     router.replace(`?${params.toString()}`);
   }, [role, debouncedEmail, page, router]);
 
-  // Build SWR key with all params
-  const swrKey = useMemo(() => {
-    const params = new URLSearchParams();
-    if (role && role !== "all") params.set("role", role);
-    if (debouncedEmail) params.set("email", debouncedEmail);
-    params.set("page", String(page));
-    params.set("limit", String(limit));
-    return `/api/admin/users?${params.toString()}`;
+  // Build SWR key with all params (using object for direct authClient calls)
+  const swrKey = useMemo((): GetUsersOptions => {
+    const options: GetUsersOptions = {
+      limit,
+      offset: (page - 1) * limit,
+    };
+    if (role && role !== "all") options.role = role;
+    if (debouncedEmail) options.email = debouncedEmail;
+    return options;
   }, [role, debouncedEmail, page, limit]);
 
-  const { data, error, mutate, isLoading } = useSWR(swrKey, fetcher, {
-    revalidateOnFocus: false,
-    dedupingInterval: 2000,
-  });
+  const { data, error, mutate, isLoading } = useSWR(
+    // Use JSON string as cache key for SWR
+    JSON.stringify(swrKey),
+    () => fetcher(swrKey),
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 2000,
+    }
+  );
 
   const handleActionComplete = () => {
     mutate();

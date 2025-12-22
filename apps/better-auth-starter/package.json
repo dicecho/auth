@@ -11,7 +11,7 @@
     "url": "https://github.com/zexahq/better-auth-starter"
   },
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbopack -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

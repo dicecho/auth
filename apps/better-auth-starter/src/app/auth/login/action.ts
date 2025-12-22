@@ -1,7 +1,6 @@
-"use server";
+"use client";
 
-import { auth } from "@/lib/auth";
-import { APIError } from "better-auth/api";
+import { authClient } from "@/lib/auth-client";
 import { ActionResult } from "@/lib/schemas";
 
 export async function loginUser({
@@ -11,22 +10,21 @@ export async function loginUser({
   email: string;
   password: string;
 }): Promise<ActionResult<{ user: { id: string; email: string } }>> {
-  try {
-    await auth.api.signInEmail({ body: { email, password } });
+  const { error } = await authClient.signIn.email({
+    email,
+    password,
+  });
 
+  if (error) {
     return {
-      success: { reason: "Login successful" },
-      error: null,
-      data: undefined,
+      error: { reason: error.message ?? "Something went wrong." },
+      success: null,
     };
-  } catch (err) {
-    if (err instanceof APIError) {
-      return {
-        error: { reason: err.message },
-        success: null,
-      };
-    }
-
-    return { error: { reason: "Something went wrong." }, success: null };
   }
+
+  return {
+    success: { reason: "Login successful" },
+    error: null,
+    data: undefined,
+  };
 }
