@@ -1,5 +1,5 @@
 {
-  "name": "next-better-auth-starter",
+  "name": "dicecho-auth-dashboard",
   "version": "2.0.0",
   "description": "A modern Next.js boilerplate with authentication, admin dashboard, and user management built with Better Auth, Drizzle ORM, and PostgreSQL",
   "private": true,
