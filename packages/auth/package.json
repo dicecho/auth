@@ -9,12 +9,16 @@
       "default": "./src/*.ts"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "auth:migrate": "pnpm dlx @better-auth/cli migrate",
+    "auth:generate": "pnpm dlx @better-auth/cli generate --output ../db/src/schema/auth.ts --yes"
+  },
   "devDependencies": {
-    "@dicecho-auth/config": "workspace:*",
+    "@better-auth/cli": "^1.4.7",
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@dicecho-auth/config": "workspace:*",
     "@dicecho-auth/db": "workspace:*",
     "better-auth": "catalog:",
     "dotenv": "catalog:",

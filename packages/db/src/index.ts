@@ -1,5 +1,5 @@
+import { env } from "@dicecho-auth/config/env";
 import { neon, neonConfig } from "@neondatabase/serverless";
-import { env } from "cloudflare:workers";
 import { drizzle } from "drizzle-orm/neon-http";
 import ws from "ws";
 

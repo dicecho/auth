@@ -13,19 +13,29 @@
     "dev:native": "pnpm --filter native dev",
     "dev:web": "pnpm --filter web dev",
     "dev:server": "pnpm --filter server dev",
+    "auth:migrate": "pnpm --filter @dicecho-auth/auth auth:migrate",
+    "auth:generate": "pnpm --filter @dicecho-auth/auth auth:generate",
     "db:push": "pnpm --filter @dicecho-auth/db db:push",
     "db:studio": "pnpm --filter @dicecho-auth/db db:studio",
     "db:generate": "pnpm --filter @dicecho-auth/db db:generate",
-    "db:migrate": "pnpm --filter @dicecho-auth/db db:migrate"
+    "db:migrate": "pnpm --filter @dicecho-auth/db db:migrate",
+    "db:mark-executed": "tsx scripts/mark-migration-executed.ts",
+    "migrate:users": "tsx scripts/migrate-users.ts",
+    "migrate:users:dry": "tsx scripts/migrate-users.ts --dry-run"
   },
   "packageManager": "pnpm@10.20.0",
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
     "dotenv": "catalog:",
+    "drizzle-orm": "^0.45.1",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "typescript": "catalog:",
+    "@better-auth/cli": "^1.4.7",
+    "@cloudflare/workers-types": "catalog:",
     "@types/node": "catalog:",
-    "@cloudflare/workers-types": "catalog:"
+    "mongodb": "^7.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "catalog:"
   }
 }

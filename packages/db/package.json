@@ -26,6 +26,7 @@
     "@neondatabase/serverless": "^1.0.2",
     "ws": "^8.18.3",
     "dotenv": "catalog:",
-    "zod": "catalog:"
+    "zod": "catalog:",
+    "@dicecho-auth/config": "workspace:*"
   }
 }
