@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient, signOut } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -17,7 +17,7 @@ import { LogOut, Shield, User } from "lucide-react";
 import Image from "next/image";
 
 const Navbar = () => {
-  const { signOut, useSession } = authClient;
+  const { useSession } = authClient;
   const { data: session } = useSession();
 
   const isAdmin = session?.user?.role === "admin";

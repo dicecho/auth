@@ -6,7 +6,6 @@ import { OpenAPIReferencePlugin } from "@orpc/openapi/plugins";
 import { onError } from "@orpc/server";
 import { RPCHandler } from "@orpc/server/fetch";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
-import { env } from "cloudflare:workers";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
@@ -14,13 +13,15 @@ import { logger } from "hono/logger";
 const app = new Hono();
 
 app.use(logger());
+
+// Using bearer token instead of cookies - allow all origins
 app.use(
   "/*",
   cors({
-    origin: env.CORS_ORIGIN || "",
+    origin: "*",
     allowMethods: ["GET", "POST", "OPTIONS"],
     allowHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    exposeHeaders: ["set-auth-token"], // Expose token header to client
   }),
 );
 

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Users, Settings, LogOut, GalleryVerticalEnd } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
+import { signOut } from "@/lib/auth-client";
 
 import {
   Sidebar,
@@ -29,7 +29,6 @@ const sidebarNavItems = [
 export function DashboardSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { signOut } = authClient;
 
   const handleLogout = async () => {
     try {

@@ -3,7 +3,7 @@ import * as schema from "@dicecho-auth/db/schema/auth";
 import { env } from "@dicecho-auth/config/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin } from "better-auth/plugins";
+import { admin, bearer } from "better-auth/plugins";
 import { sendEmail } from "./email";
 import {
   verifyEmailTemplate,
@@ -102,7 +102,8 @@ export const auth = betterAuth({
     provider: "pg",
     schema: schema,
   }),
-  trustedOrigins: [env.CORS_ORIGIN],
+  // Support multiple origins (comma-separated in env)
+  trustedOrigins: (env.CORS_ORIGIN || "").split(",").map((o) => o.trim()).filter(Boolean),
   // dev helpers: relax cookies when running on http://localhost to allow local testing
   // Note: Chrome requires Secure when SameSite=None, so switch to Lax for localhost.
   advanced: {
@@ -165,5 +166,8 @@ export const auth = betterAuth({
   },
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
-  plugins: [admin({ defaultRole: "user", adminRoles: ["admin"] })]
+  plugins: [
+    admin({ defaultRole: "user", adminRoles: ["admin"] }),
+    bearer(),
+  ]
 });
