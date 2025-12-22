@@ -18,7 +18,9 @@
     "db:push": "pnpm --filter @dicecho-auth/db db:push",
     "db:studio": "pnpm --filter @dicecho-auth/db db:studio",
     "db:generate": "pnpm --filter @dicecho-auth/db db:generate",
-    "db:migrate": "pnpm --filter @dicecho-auth/db db:migrate"
+    "db:migrate": "pnpm --filter @dicecho-auth/db db:migrate",
+    "migrate:users": "tsx scripts/migrate-users.ts",
+    "migrate:users:dry": "tsx scripts/migrate-users.ts --dry-run"
   },
   "packageManager": "pnpm@10.20.0",
   "dependencies": {

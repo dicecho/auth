@@ -14,11 +14,7 @@
     "dev": "next dev --turbopack -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "lint": "next lint"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -41,7 +37,7 @@
     "drizzle-orm": "^0.45.1",
     "framer-motion": "^12.23.9",
     "lucide-react": "^0.511.0",
-    "next": "^16.0.10",
+    "next": "^16.1.0",
     "pg": "^8.16.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",

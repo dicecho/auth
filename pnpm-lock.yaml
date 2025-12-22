@@ -75,9 +75,6 @@ importers:
 
   apps/better-auth-starter:
     dependencies:
-      '@dicecho-auth/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@hookform/resolvers':
         specifier: ^5.0.1
         version: 5.2.2(react-hook-form@7.69.0(react@19.2.3))
@@ -139,7 +136,7 @@ importers:
         specifier: ^0.511.0
         version: 0.511.0(react@19.2.3)
       next:
-        specifier: ^16.0.10
+        specifier: ^16.1.0
         version: 16.1.0(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       pg:
         specifier: ^8.16.0
