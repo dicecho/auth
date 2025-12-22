@@ -22,6 +22,8 @@ export const authClient = createAuthClient({
     }),
   ],
   fetchOptions: {
+    // Disable cookies - use bearer token instead
+    credentials: "omit",
     // Use bearer token instead of cookies
     onRequest: (ctx) => {
       const token = typeof window !== "undefined" ? localStorage.getItem(TOKEN_KEY) : null;
