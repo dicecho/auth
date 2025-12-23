@@ -18,6 +18,7 @@
     "typescript": "catalog:"
   },
   "dependencies": {
+    "@better-auth/expo": "^1.4.9",
     "@dicecho-auth/config": "workspace:*",
     "@dicecho-auth/db": "workspace:*",
     "better-auth": "catalog:",

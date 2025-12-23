@@ -3,7 +3,8 @@ import * as schema from "@dicecho-auth/db/schema/auth";
 import { env } from "@dicecho-auth/config/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, bearer, jwt } from "better-auth/plugins";
+import { admin, bearer, jwt, oAuthProxy } from "better-auth/plugins";
+import { expo } from "@better-auth/expo";
 import { sendEmail } from "./email";
 import {
   verifyEmailTemplate,
@@ -116,16 +117,19 @@ export const auth = betterAuth({
     modelName: "session",
     expiresIn: 60 * 60 * 24 * 7, // 7 days
     updateAge: 60 * 60 * 24, // 1 day
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 5, // 5 minutes
-    },
   },
   // Support multiple origins (comma-separated in env)
-  trustedOrigins: (env.CORS_ORIGIN || "")
-    .split(",")
-    .map((o) => o.trim())
-    .filter(Boolean),
+  // Includes web origins and mobile app schemes
+  trustedOrigins: [
+    // Web origins from env
+    ...(env.CORS_ORIGIN || "").split(",").map((o) => o.trim()).filter(Boolean),
+    // Mobile app scheme (配置你的 app scheme)
+    "dicecho://",
+    // Expo development schemes
+    ...(process.env.NODE_ENV === "development"
+      ? ["exp://", "exp://**", "exp://192.168.*.*:*/**"]
+      : []),
+  ],
   // OAuth social providers
   socialProviders: {
     google: {
@@ -158,8 +162,6 @@ export const auth = betterAuth({
         return {
           sameSite: "lax", // lax works for same-site (localhost)
           secure: false,
-          httpOnly: true,
-          domain: "localhost", // Key: share cookies across ports
         } as const;
       }
       
@@ -216,19 +218,22 @@ export const auth = betterAuth({
   plugins: [
     admin({ defaultRole: "user", adminRoles: ["admin"] }),
     bearer(),
+    oAuthProxy(),
     jwt({
       jwks: {
         keyPairConfig: {
           alg: "EdDSA", // 使用 EdDSA (Ed25519) - 高性能且安全
           crv: "Ed25519",
         },
-        jwksPath: "/.well-known/jwks.json", // 标准 JWKS 路径
       },
       jwt: {
         expirationTime: "7d", // Token 有效期 7 天
         issuer: env.BETTER_AUTH_URL,
-        audience: env.BETTER_AUTH_URL,
+        // 支持多个服务验证
+        audience: [env.BETTER_AUTH_URL, "dicecho-api", "dicecho-app"],
       },
     }),
+    // Expo 移动端支持
+    expo(),
   ],
 });
