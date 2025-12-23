@@ -14,6 +14,11 @@ export const server = await Worker("server", {
     CORS_ORIGIN: alchemy.env.CORS_ORIGIN,
     BETTER_AUTH_SECRET: alchemy.secret.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: alchemy.env.BETTER_AUTH_URL,
+    // OAuth providers
+    GOOGLE_CLIENT_ID: alchemy.secret.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: alchemy.secret.env.GOOGLE_CLIENT_SECRET,
+    GITHUB_CLIENT_ID: alchemy.secret.env.GITHUB_CLIENT_ID,
+    GITHUB_CLIENT_SECRET: alchemy.secret.env.GITHUB_CLIENT_SECRET,
     MAILGUN_API_KEY: alchemy.secret.env.MAILGUN_API_KEY,
     MAILGUN_DOMAIN: alchemy.env.MAILGUN_DOMAIN,
   },

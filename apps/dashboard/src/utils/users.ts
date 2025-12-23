@@ -10,7 +10,6 @@ export interface UserWithDetails {
   banned: boolean;
   banReason?: string;
   banExpires?: Date | null;
-  accounts?: string[];
   lastSignIn?: Date | null;
   createdAt: Date;
   avatarUrl: string;
@@ -78,7 +77,6 @@ export async function getUsers(
     banned: user.banned ?? false,
     banReason: user.banReason || "",
     banExpires: user.banExpires || null,
-    accounts: user.accounts || [],
     lastSignIn: (user as any).lastSignIn || null,
     createdAt: user.createdAt,
     avatarUrl: user.image || "",

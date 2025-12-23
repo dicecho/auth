@@ -14,18 +14,42 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { DashboardSidebar } from "@/components/admin/dashboard-sidebar";
+import { authClient } from "@/lib/auth-client";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
   const pathSegments = pathname.split("/").filter((segment) => segment);
 
   const relevantSegments =
     pathSegments[0] === "admin" ? pathSegments.slice(1) : pathSegments;
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/auth/login");
+    }
+  }, [session, isPending, router]);
+
+  // Show loading state while checking session
+  if (isPending) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
+  // Don't render anything if not authenticated (will redirect)
+  if (!session) {
+    return null;
+  }
 
   return (
     <SidebarProvider>

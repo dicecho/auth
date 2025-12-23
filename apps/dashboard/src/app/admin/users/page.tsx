@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { UsersTable } from "@/components/admin/users-table";
 
 export const metadata: Metadata = {
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function UsersPage() {
   return (
     <div className="flex flex-col gap-4 p-4 md:p-6">
-      <UsersTable />
+      <Suspense fallback={<div>Loading...</div>}>
+        <UsersTable />
+      </Suspense>
     </div>
   );
 }

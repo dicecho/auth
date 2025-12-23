@@ -463,19 +463,6 @@ export function UsersTable() {
                       )}
                     </TableCell>
                     <TableCell className="px-4 py-3">
-                      <div className="flex -space-x-2">
-                        {user.accounts.map((account) => (
-                          <div
-                            key={account}
-                            className="rounded-full bg-muted p-1.5 text-muted-foreground dark:bg-neutral-700"
-                            title={account}
-                          >
-                            {getAccountIcon(account)}
-                          </div>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3">
                       <Badge
                         variant="outline"
                         className={`flex items-center gap-1 px-2 py-1 text-xs ${

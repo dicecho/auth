@@ -8,6 +8,20 @@
       "when": 1766388424286,
       "tag": "0000_glossy_talos",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1766417740847,
+      "tag": "0001_aberrant_satana",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766431329558,
+      "tag": "0002_light_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

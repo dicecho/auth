@@ -3,7 +3,7 @@ import * as schema from "@dicecho-auth/db/schema/auth";
 import { env } from "@dicecho-auth/config/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, bearer } from "better-auth/plugins";
+import { admin, bearer, jwt } from "better-auth/plugins";
 import { sendEmail } from "./email";
 import {
   verifyEmailTemplate,
@@ -97,32 +97,79 @@ async function customVerifyPassword({
   return verifyWithScrypt(password, hash);
 }
 
+console.log('redirectUri', `${env.BETTER_AUTH_URL}/api/auth/callback/google`)
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
   }),
+  account: {
+    accountLinking: {
+      enabled: true,
+      allowDifferentEmails: true,
+      updateUserInfoOnLink: true
+    },
+  },
+  // JWT session tokens for stateless verification
+  session: {
+    modelName: "session",
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // 1 day
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 5, // 5 minutes
+    },
+  },
   // Support multiple origins (comma-separated in env)
-  trustedOrigins: (env.CORS_ORIGIN || "").split(",").map((o) => o.trim()).filter(Boolean),
-  // dev helpers: relax cookies when running on http://localhost to allow local testing
-  // Note: Chrome requires Secure when SameSite=None, so switch to Lax for localhost.
+  trustedOrigins: (env.CORS_ORIGIN || "")
+    .split(",")
+    .map((o) => o.trim())
+    .filter(Boolean),
+  // OAuth social providers
+  socialProviders: {
+    google: {
+      clientId: env.GOOGLE_CLIENT_ID || "",
+      clientSecret: env.GOOGLE_CLIENT_SECRET || "",
+      enabled: !!(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET),
+      redirectUri: `${env.BETTER_AUTH_URL}/api/auth/callback/google`,
+    },
+    apple: {
+      clientId: env.APPLE_CLIENT_ID || "",
+      clientSecret: env.APPLE_CLIENT_SECRET || "",
+      enabled: !!(env.APPLE_CLIENT_ID && env.APPLE_CLIENT_SECRET),
+    },
+    github: {
+      clientId: env.GITHUB_CLIENT_ID || "",
+      clientSecret: env.GITHUB_CLIENT_SECRET || "",
+      enabled: !!(env.GITHUB_CLIENT_ID && env.GITHUB_CLIENT_SECRET),
+      redirectUri: `${env.BETTER_AUTH_URL}/api/auth/callback/github`,
+    },
+  },
+  // Cross-origin cookie support for localhost (different ports like 3000 and 3001)
   advanced: {
     defaultCookieAttributes: (() => {
       const isLocal =
         typeof env.BETTER_AUTH_URL === "string" &&
         env.BETTER_AUTH_URL.startsWith("http://localhost");
+      
+      if (isLocal) {
+        // For localhost: share cookies across different ports
+        return {
+          sameSite: "lax", // lax works for same-site (localhost)
+          secure: false,
+          httpOnly: true,
+          domain: "localhost", // Key: share cookies across ports
+        } as const;
+      }
+      
+      // Production: strict cross-origin settings
       return {
-        sameSite: isLocal ? "lax" : "none",
-        secure: isLocal ? false : true,
+        sameSite: "none",
+        secure: true,
         httpOnly: true,
       } as const;
     })(),
-    // uncomment crossSubDomainCookies setting when ready to deploy and replace <your-workers-subdomain> with your actual workers subdomain
-    // https://developers.cloudflare.com/workers/wrangler/configuration/#workersdev
-    // crossSubDomainCookies: {
-    //   enabled: true,
-    //   domain: "<your-workers-subdomain>",
-    // },
   },
   user: {
     additionalFields: {
@@ -169,5 +216,19 @@ export const auth = betterAuth({
   plugins: [
     admin({ defaultRole: "user", adminRoles: ["admin"] }),
     bearer(),
-  ]
+    jwt({
+      jwks: {
+        keyPairConfig: {
+          alg: "EdDSA", // 使用 EdDSA (Ed25519) - 高性能且安全
+          crv: "Ed25519",
+        },
+        jwksPath: "/.well-known/jwks.json", // 标准 JWKS 路径
+      },
+      jwt: {
+        expirationTime: "7d", // Token 有效期 7 天
+        issuer: env.BETTER_AUTH_URL,
+        audience: env.BETTER_AUTH_URL,
+      },
+    }),
+  ],
 });

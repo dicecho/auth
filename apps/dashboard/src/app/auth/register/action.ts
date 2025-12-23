@@ -14,19 +14,35 @@ export async function registerUser(
   if (!parsed.success) {
     return {
       success: null,
-      error: { reason: parsed.error.errors[0]?.message || "Invalid input" },
+      error: { reason: parsed.error.issues[0]?.message || "Invalid input" },
     };
   }
 
   const { email, password, name } = parsed.data;
 
   try {
-    const { user, error } = await authClient.signUp.email({
-      body: { email, password, name, callbackURL: DEFAULT_LOGIN_REDIRECT },
+    const result = await authClient.signUp.email({
+      email,
+      password,
+      name,
+      locale: "en",
+      callbackURL: DEFAULT_LOGIN_REDIRECT,
     });
 
-    if (error) {
-      throw new APIError(error.status ?? "BAD_REQUEST", error.message);
+    if ("error" in result && result.error) {
+      const errorMessage = result.error.message ?? "Something went wrong.";
+      if (errorMessage.includes("already exists") || errorMessage.includes("UNPROCESSABLE_ENTITY")) {
+        return { error: { reason: "User already exists." }, success: null };
+      }
+      if (errorMessage.includes("BAD_REQUEST") || errorMessage.includes("Invalid")) {
+        return { error: { reason: "Invalid email." }, success: null };
+      }
+      return { error: { reason: errorMessage }, success: null };
+    }
+
+    const user = "data" in result && result.data ? result.data.user : null;
+    if (!user) {
+      return { error: { reason: "Failed to create user." }, success: null };
     }
 
     return {

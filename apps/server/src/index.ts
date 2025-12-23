@@ -8,20 +8,30 @@ import { RPCHandler } from "@orpc/server/fetch";
 import { ZodToJsonSchemaConverter } from "@orpc/zod/zod4";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { env } from "@dicecho-auth/config/env";
 import { logger } from "hono/logger";
 
 const app = new Hono();
 
 app.use(logger());
 
-// Using bearer token instead of cookies - allow all origins
+// Support both cookies and bearer tokens for cross-origin authentication
 app.use(
   "/*",
   cors({
-    origin: "*",
-    allowMethods: ["GET", "POST", "OPTIONS"],
-    allowHeaders: ["Content-Type", "Authorization"],
-    exposeHeaders: ["set-auth-token"], // Expose token header to client
+    origin: (() => {
+      const list = (env.CORS_ORIGIN || "")
+        .split(",")
+        .map((o) => o.trim())
+        .filter(Boolean);
+      if (list.length > 0) return list;
+      // sensible local default to avoid silent credential drops
+      return ["http://localhost:3001", "http://127.0.0.1:3001"];
+    })(),
+    allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowHeaders: ["Content-Type", "Authorization", "Cookie"], // Added Cookie header
+    exposeHeaders: ["set-auth-token", "Set-Cookie"], // Expose cookie headers
+    credentials: true,
   }),
 );
 
