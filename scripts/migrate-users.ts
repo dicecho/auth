@@ -204,9 +204,14 @@ async function migrate() {
   const sql = neon(DATABASE_URL!);
   const db = drizzle(sql, { schema });
 
+  const query = {
+    verified: true,
+    email: 'lza11111@163.com'
+  }
+
   try {
     // Get total count
-    stats.total = await usersCollection.countDocuments({ verified: true });
+    stats.total = await usersCollection.countDocuments(query);
     console.log(`\nTotal verified users to migrate: ${stats.total}`);
     console.log("");
 
@@ -215,7 +220,7 @@ async function migrate() {
     let batch = 0;
 
     const cursor = usersCollection
-      .find({ verified: true })
+      .find(query)
       .sort({ createdAt: 1 })
       .skip(SKIP);
 

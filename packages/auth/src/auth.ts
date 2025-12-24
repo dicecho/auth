@@ -3,7 +3,7 @@ import * as schema from "@dicecho-auth/db/schema/auth";
 import { env } from "@dicecho-auth/config/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { admin, bearer, jwt, oAuthProxy } from "better-auth/plugins";
+import { admin, bearer, jwt, magicLink, oAuthProxy } from "better-auth/plugins";
 import { expo } from "@better-auth/expo";
 import { sendEmail } from "./email";
 import {
@@ -193,7 +193,7 @@ export const auth = betterAuth({
       const userWithLocale = user as typeof user & { locale?: string };
       const locale = userWithLocale.locale;
       // Don't await to prevent timing attacks
-      void sendEmail({
+      await sendEmail({
         to: user.email,
         subject: getResetPasswordEmailSubject(locale),
         html: resetPasswordTemplate(user.name, url, locale),
@@ -205,13 +205,14 @@ export const auth = betterAuth({
       const userWithLocale = user as typeof user & { locale?: string };
       const locale = userWithLocale.locale;
       // Don't await to prevent timing attacks
-      void sendEmail({
+      await sendEmail({
         to: user.email,
         subject: getVerificationEmailSubject(locale),
         html: verifyEmailTemplate(url, locale),
       });
     },
     sendOnSignUp: true,
+    autoSignInAfterVerification: true,
   },
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.BETTER_AUTH_URL,
@@ -219,6 +220,15 @@ export const auth = betterAuth({
     admin({ defaultRole: "user", adminRoles: ["admin"] }),
     bearer(),
     oAuthProxy(),
+    magicLink({
+      sendMagicLink: async ({ email, url }) => {
+        await sendEmail({
+          to: email,
+          subject: "完成账户设置",
+          html: verifyEmailTemplate(url),
+        });
+      },
+    }),
     jwt({
       jwks: {
         keyPairConfig: {

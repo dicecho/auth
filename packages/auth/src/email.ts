@@ -16,6 +16,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
   const mailgunDomain = env.MAILGUN_DOMAIN;
   const mailgunApiKey = env.MAILGUN_API_KEY;
 
+
   if (!mailgunDomain || !mailgunApiKey) {
     console.error("Mailgun configuration missing");
     return false;
@@ -29,24 +30,21 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
   formData.append("subject", subject);
   formData.append("html", html);
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${btoa(`api:${mailgunApiKey}`)}`,
-      },
-      body: formData,
-    });
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${btoa(`api:${mailgunApiKey}`)}`,
+    },
+    body: formData,
+  });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Mailgun API error:", response.status, errorText);
-      return false;
-    }
+  console.log("response", response);
 
-    return true;
-  } catch (error) {
-    console.error("Failed to send email:", error);
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Mailgun API error:", response.status, errorText);
     return false;
   }
+
+  return true;
 }

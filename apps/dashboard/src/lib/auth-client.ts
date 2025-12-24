@@ -1,5 +1,5 @@
 import { DEFAULT_LOGIN_REDIRECT } from "@/lib/config";
-import { adminClient, inferAdditionalFields, jwtClient } from "better-auth/client/plugins";
+import { adminClient, inferAdditionalFields, jwtClient, magicLinkClient } from "better-auth/client/plugins";
 import { createAuthClient } from "better-auth/react";
 
 const AUTH_BASE_URL = process.env.NEXT_PUBLIC_AUTH_BASE_URL || "http://localhost:3000";
@@ -9,6 +9,7 @@ export const authClient = createAuthClient({
   baseURL: AUTH_BASE_URL,
   plugins: [
     adminClient(),
+    magicLinkClient(),
     jwtClient(),
     inferAdditionalFields({
       user: {
@@ -63,4 +64,3 @@ export const signOut = async () => {
     },
   });
 };
-

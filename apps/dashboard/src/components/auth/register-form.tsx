@@ -1,15 +1,19 @@
 "use client";
 
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import PasswordInput from "./password-input";
-import { registerSchema } from "@/lib/schemas";
-import { registerUser } from "@/app/auth/register/action";
+import { emailRegisterSchema } from "@/lib/schemas";
 import { FormSuccess, FormError } from "../ui/form-messages";
+import { authClient } from "@/lib/auth-client";
+import {
+  DEFAULT_COMPLETE_REGISTRATION_REDIRECT,
+  DEFAULT_LOGIN_REDIRECT,
+  APP_BASE_URL,
+} from "@/lib/config";
 
 const RegisterForm = () => {
   const [formState, setFormState] = React.useState<{
@@ -21,20 +25,26 @@ const RegisterForm = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    control,
   } = useForm({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    resolver: zodResolver(emailRegisterSchema),
+    defaultValues: { email: "" },
   });
 
-  const onSubmit = async (data: import("../../lib/schemas").RegisterSchema) => {
+  const onSubmit = async (
+    data: import("../../lib/schemas").EmailRegisterSchema,
+  ) => {
     setFormState({});
-    const result = await registerUser(data);
-    if (result.success) {
-      setFormState({ success: result.success.reason });
-    } else if (result.error) {
-      setFormState({ error: result.error.reason });
+    const { error } = await authClient.signIn.magicLink({
+      email: data.email,
+      callbackURL: DEFAULT_LOGIN_REDIRECT,
+      newUserCallbackURL: DEFAULT_COMPLETE_REGISTRATION_REDIRECT,
+      errorCallbackURL: `${APP_BASE_URL}/auth/register`,
+    });
+    if (error) {
+      setFormState({ error: error.message || "Something went wrong." });
+      return;
     }
+    setFormState({ success: "Check your email to continue." });
   };
 
   return (
@@ -44,19 +54,6 @@ const RegisterForm = () => {
     >
       <FormSuccess message={formState.success || ""} />
       <FormError message={formState.error || ""} />
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          type="text"
-          placeholder="Your name"
-          autoComplete="name"
-          {...register("name")}
-        />
-        {errors.name && (
-          <span className="text-xs text-red-500">{errors.name.message}</span>
-        )}
-      </div>
       <div className="flex flex-col gap-2">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -70,27 +67,8 @@ const RegisterForm = () => {
           <span className="text-xs text-red-500">{errors.email.message}</span>
         )}
       </div>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="password">Password</Label>
-        <Controller
-          name="password"
-          control={control}
-          render={({ field }) => (
-            <PasswordInput
-              value={field.value}
-              onChange={field.onChange}
-              id="password"
-            />
-          )}
-        />
-        {errors.password && (
-          <span className="text-xs text-red-500">
-            {errors.password.message}
-          </span>
-        )}
-      </div>
       <Button type="submit" className="mt-2 w-full" disabled={isSubmitting}>
-        {isSubmitting ? "Registering..." : "Register"}
+        {isSubmitting ? "Sending..." : "Send verification email"}
       </Button>
     </form>
   );
