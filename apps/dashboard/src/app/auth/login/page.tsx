@@ -57,6 +57,14 @@ const LoginPage = () => {
                 Create an account
               </Link>
             </div>
+            <div className="text-center text-sm">
+              <Link
+                href="/auth/reset"
+                className="text-primary underline hover:no-underline font-medium"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>

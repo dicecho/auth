@@ -11,7 +11,7 @@
     "build": "pnpm -r build",
     "check-types": "pnpm -r check-types",
     "dev:native": "pnpm --filter native dev",
-    "dev:web": "pnpm --filter web dev",
+    "dev:web": "pnpm --filter dicecho-auth-dashboard dev",
     "dev:server": "pnpm --filter server dev",
     "auth:migrate": "pnpm --filter @dicecho-auth/auth auth:migrate",
     "auth:generate": "pnpm --filter @dicecho-auth/auth auth:generate",
